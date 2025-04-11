@@ -28,7 +28,7 @@ document.getElementById('start-game').addEventListener('click', () => {
   document.getElementById("clear-storage").addEventListener("click", () => {
     // Törölje az összes adatot a localStorage-ból
     localStorage.clear();
-    alert("Az emlékek és a játékok kerültek!");
+    alert("Az emlékek és a játékok törlésre kerültek!");
   });
   
   
