@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scene 1</title>
+  <link rel="stylesheet" href="scene1.css">
+</head>
+<body>
+  <script>
+    // Az új játék gombra kattintva elmentjük, hogy itt kezdődik a játék
+    localStorage.setItem('currentMap', 'scene1.html');
+
+    // A szöveg, amit megjelenítünk a csíkon
+    const messages = [
+      "Üdv a Jó helyen! Itt az emlékeidet újraélheted.",
+      "Remélem, sok élményben lesz részed! Csodálatos világ ez!"
+    ];
+
+    let currentMessage = 0;
+
+    // A szövegek megjelenítése és váltása
+    function displayMessage() {
+      const messageBox = document.getElementById('message-box');
+      messageBox.textContent = messages[currentMessage];
+
+      // Ha 3 mp után nyomja meg a space-t
+      setTimeout(() => {
+        window.addEventListener('keydown', function handleSpace(e) {
+          if (e.code === 'Space') {
+            if (currentMessage === 0) {
+              currentMessage = 1;
+              displayMessage();
+            } else {
+              window.location.href = 'scene2.html'; // Átirányít a következő térképre
+            }
+            window.removeEventListener('keydown', handleSpace); // A space esemény eltávolítása, miután lenyomták
+          }
+        });
+      }, 3000); // 3 másodperc várakozás a space billentyű megnyomásáig
+    }
+
+    // Indítsuk el a szöveg megjelenítését
+    window.onload = function() {
+      displayMessage();
+    }
+  </script>
+
+  <div class="character-container">
+    <img src="michael.png" alt="Character" id="character">
+  </div>
+
+  <div class="message-container">
+    <div id="message-box" class="message-box"></div>
+  </div>
+</body>
+</html>

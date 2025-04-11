@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scene 5</title>
+  <link rel="stylesheet" href="scene5.css" />
+</head>
+<body>
+  <div class="scene fade-in">
+    <img src="mama1.png" class="character" id="mama" />
+  </div>
+
+  <!-- Dialógusdoboz a képernyő alján -->
+  <div class="dialogue">Mindenki: Boldog szülinapot Törpmama!</div>
+
+  <script>
+    // Memória frissítése – több emlék engedélyezett
+    const memoryKey = 'memories';
+    const newMemory = 'Vándor';
+    const newerMemory = 'SZÜLINAPOS!';
+
+    // Jelenlegi memória betöltése, ha van
+    let memories = JSON.parse(localStorage.getItem(memoryKey)) || [];
+
+    // Ha még nincs benne az új emlék, hozzáadjuk
+    if (!memories.includes(newMemory)) {
+        memories.push(newMemory);
+        localStorage.setItem(memoryKey, JSON.stringify(memories));
+    }
+
+    if (!memories.includes(newerMemory)) {
+        memories.push(newerMemory);
+        localStorage.setItem(memoryKey, JSON.stringify(memories));
+    }
+    
+    localStorage.setItem('currentMap', 'scene5.html');
+
+    const mama = document.getElementById('mama');
+
+    let pos = 0;
+    let frame = 1;
+    let isAnimating = false;
+    let isFacingRight = true;
+    const moveSpeed = 5;
+
+    document.addEventListener('keydown', (e) => {
+      let moved = false;
+
+      if (e.key === 'd' || e.key === 'D') {
+        pos += moveSpeed;
+        moved = true;
+        if (!isFacingRight) {
+          isFacingRight = true;
+          mama.style.transform = 'scaleX(1)';
+        }
+      } else if (e.key === 'a' || e.key === 'A') {
+        pos -= moveSpeed;
+        moved = true;
+        if (isFacingRight) {
+          isFacingRight = false;
+          mama.style.transform = 'scaleX(-1)';
+        }
+      }
+
+      pos = Math.max(0, Math.min(pos, window.innerWidth - 100));
+      mama.style.left = pos + 'px';
+
+      if (moved && !isAnimating) {
+        isAnimating = true;
+        setTimeout(() => {
+          frame = frame === 1 ? 2 : 1;
+          mama.src = `mama${frame}.png`;
+          isAnimating = false;
+        }, 250);
+      }
+    });
+
+    mama.style.left = '0px';
+
+    window.addEventListener('resize', () => {
+      pos = Math.min(pos, window.innerWidth - 100);
+      mama.style.left = pos + 'px';
+    });
+  </script>
+</body>
+</html>

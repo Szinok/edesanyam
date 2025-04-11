@@ -1,0 +1,65 @@
+body {
+  background-color: #1e1e1e;
+  font-family: 'Courier New', monospace;
+  color: #00ff00; /* Neon zöld szín */
+  text-align: center;
+  padding: 50px;
+  margin: 0;
+  animation: fadeIn 1s ease-in-out; /* Itt az új sor */
+}
+
+h1 {
+  font-size: 3em;
+  margin-bottom: 40px;
+}
+
+.menu-buttons button {
+  background-color: transparent;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  padding: 20px 40px;
+  margin: 10px;
+  font-size: 1.5em;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease;
+}
+
+.menu-buttons button:hover {
+  background-color: #00ff00;
+  color: #1e1e1e;
+}
+
+.menu-buttons button:active {
+  transform: scale(0.95);
+}
+
+.menu-button {
+  background-color: transparent;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  padding: 20px 40px;
+  margin: 10px;
+  font-size: 1.5em;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease;
+}
+
+.menu-button:hover {
+  background-color: #00ff00;
+  color: #1e1e1e;
+}
+
+.menu-button:active {
+  transform: scale(0.95);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

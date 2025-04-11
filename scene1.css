@@ -1,0 +1,37 @@
+body {
+    background-image: url('room.png');
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Az aljára igazítjuk */
+    overflow: hidden; /* Tiltjuk a görgetést */
+  }
+  
+  .character-container {
+    position: absolute;
+    bottom: 0; /* Az aljára igazítjuk */
+  }
+  
+  #character {
+    width: 500px; /* A kép méretének beállítása */
+    height: auto; /* Megőrizzük a képarányokat */
+  }
+  
+  .message-container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(50, 50, 50, 0.7); /* Sötétszürke háttér, 70%-os átlátszósággal */
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .message-box {
+    font-size: 1.5em;
+    color: #ffffff;
+    font-family: 'Courier New', monospace;
+  }
+  

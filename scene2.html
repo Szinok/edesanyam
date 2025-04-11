@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scene 2</title>
+  <link rel="stylesheet" href="scene2.css" />
+</head>
+<body>
+  <div class="scene fade-in">
+    <img src="mama1.png" class="character" id="mama" />
+    <div class="dialogue" id="dialogue">Leon: Vidd biztonságba a növényem!</div>
+    <div class="inventory-msg" id="inventoryMsg">1 növény hozzáadva az inventoryhoz.</div>
+
+  </div>
+
+  <script>
+    // Mentés localStorage-be
+    localStorage.setItem('currentMap', 'scene2.html');
+    // Memória frissítése – több emlék engedélyezett
+    const memoryKey = 'memories';
+    const newMemory = 'A jó hely';
+
+    // Jelenlegi memória betöltése, ha van
+    let memories = JSON.parse(localStorage.getItem(memoryKey)) || [];
+
+    // Ha még nincs benne az új emlék, hozzáadjuk
+    if (!memories.includes(newMemory)) {
+        memories.push(newMemory);
+        localStorage.setItem(memoryKey, JSON.stringify(memories));
+    }
+
+  
+    const mama = document.getElementById('mama');
+    const dialogue = document.getElementById('dialogue');
+    let pos = 0;
+    let frame = 1;
+    let rightEdgeTrigger = window.innerWidth - 50;
+  
+    const moveSpeed = 10;
+    let isAnimating = false;
+    let isFacingRight = true; // Kezdetben jobbra néz
+  
+    document.addEventListener('keydown', (e) => {
+      let moved = false;
+  
+      if (e.key === 'd' || e.key === 'D') {
+        pos += moveSpeed;
+        moved = true;
+  
+        // Ha jobbra megy, a karakter balra nézzen
+        if (!isFacingRight) {
+          isFacingRight = true;
+          mama.style.transform = 'scaleX(1)'; // Visszaállítjuk a karaktert jobbra néző irányba
+        }
+      } else if (e.key === 'a' || e.key === 'A') {
+        pos -= moveSpeed;
+        moved = true;
+  
+        // Ha balra megy, a karakter balra nézzen
+        if (isFacingRight) {
+          isFacingRight = false;
+          mama.style.transform = 'scaleX(-1)'; // Megfordítjuk a karaktert, hogy balra nézzen
+        }
+      }
+  
+      pos = Math.max(0, Math.min(pos, window.innerWidth - 100));
+      mama.style.left = pos + 'px';
+  
+      if (moved) {
+        // Ha nincs animáció folyamatban, kezdjünk új animációt
+        if (!isAnimating) {
+          isAnimating = true;
+          setTimeout(() => {
+            frame = frame === 1 ? 2 : 1;
+            mama.src = `mama${frame}.png`;
+            isAnimating = false;
+          }, 250); // 0.25 mp szünet a képváltoztatás között
+        }
+      }
+  
+      if (pos >= rightEdgeTrigger - 200) {
+        dialogue.style.opacity = 1;
+
+        const inventoryMsg = document.getElementById('inventoryMsg');
+        inventoryMsg.style.opacity = 1;
+
+        setTimeout(() => {
+            inventoryMsg.style.opacity = 0;
+        }, 3000); // 3 másodperc után eltűnik
+
+        setTimeout(() => {
+            window.location.href = 'scene3.html';
+        }, 4000);
+
+        } else {
+        dialogue.style.opacity = 0;
+        }
+    });
+  
+    window.addEventListener('resize', () => {
+      rightEdgeTrigger = window.innerWidth - 50;
+    });
+  </script>
+  
+    
+</body>
+</html>

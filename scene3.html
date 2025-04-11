@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scene 3</title>
+  <link rel="stylesheet" href="scene3.css" />
+</head>
+<body>
+  <div class="scene fade-in">
+    <img src="mama1.png" class="character" id="mama" />
+    <div class="dialogue" id="dialogue">Poirot: Köszönöm a növényt! De vajon ki ehette meg a sertéspárizsit?</div>
+    <div class="hint" id="hint">Tipp: kattints a tettesre!</div>
+
+    <!-- Hover név megjelenítése -->
+    <div class="suspect-name" id="name-display">Név</div>
+
+    <!-- Gyanúsított hitboxok -->
+    <div class="suspect" data-name="Bocimacska" style="left:146px; top:759px; width:273px; height:130px;"></div>
+    <div class="suspect" data-name="Vándor" style="left:146px; top:559px; width:150px; height:200px;"></div>
+    <div class="suspect" data-name="Törpbarni" style="left:1088px; top:568px; width:77px; height:109px;"></div>
+    <div class="suspect" data-name="Pítörp" style="left:1184px; top:568px; width:98px; height:104px;"></div>
+    <div class="suspect" data-name="Poirot" style="left:1427px; top:592px; width:81px; height:272px;"></div>
+
+    <!-- Meggyanúsítom jelölőnégyzet -->
+    <label class="suspect-checkbox">
+      <input type="checkbox" id="accuse-checkbox" /> Meggyanúsítom!
+    </label>
+    
+    <!-- Dialógus doboz -->
+    <div class="character-dialogue" id="character-dialogue"></div>
+  </div>
+
+  <script>
+    // Memória frissítése – több emlék engedélyezett
+    const memoryKey = 'memories';
+    const newMemory = 'Leon növénye';
+
+    // Jelenlegi memória betöltése, ha van
+    let memories = JSON.parse(localStorage.getItem(memoryKey)) || [];
+
+    // Ha még nincs benne az új emlék, hozzáadjuk
+    if (!memories.includes(newMemory)) {
+        memories.push(newMemory);
+        localStorage.setItem(memoryKey, JSON.stringify(memories));
+    }
+    localStorage.setItem('currentMap', 'scene3.html');
+
+    const mama = document.getElementById('mama');
+    const dialogue = document.getElementById('dialogue');
+    const hint = document.getElementById('hint');
+    const nameDisplay = document.getElementById('name-display');
+    const suspects = document.querySelectorAll('.suspect');
+    const accuseCheckbox = document.getElementById('accuse-checkbox');
+    const characterDialogue = document.getElementById('character-dialogue');
+
+    let pos = 0;
+    let frame = 1;
+    let isAnimating = false;
+    let isFacingRight = true;
+    const moveSpeed = 10;
+    let hasMetPoirot = false;
+
+    const characterDialogues = {
+      Poirot: "A megoldás a részletekben rejlik, mon ami.",
+      Pítörp: "Erre jól lábaztál!",
+      Törpbarni: "Kentaur!",
+      Vándor: "Ugyan már, Törpmama! Bizony minden hájjal megkent rafinált tettes lehetett csak!",
+      Bocimacska: "Miaú, miért lettem volna én? Én csak a tormát szeretem!"
+    };
+
+    const accuseDialogues = {
+      correct: "Jól van, lebuktam, miaú. Csak ne adjatok tormát!",
+      incorrect: "TÉVES"
+    };
+
+    document.addEventListener('keydown', (e) => {
+      let moved = false;
+
+      if (e.key === 'd' || e.key === 'D') {
+        pos += moveSpeed;
+        moved = true;
+        if (!isFacingRight) {
+          isFacingRight = true;
+          mama.style.transform = 'scaleX(1)';
+        }
+      } else if (e.key === 'a' || e.key === 'A') {
+        pos -= moveSpeed;
+        moved = true;
+        if (isFacingRight) {
+          isFacingRight = false;
+          mama.style.transform = 'scaleX(-1)';
+        }
+      }
+
+      pos = Math.max(0, Math.min(pos, window.innerWidth - 100));
+      mama.style.left = pos + 'px';
+
+      if (moved && !isAnimating) {
+        isAnimating = true;
+        setTimeout(() => {
+          frame = frame === 1 ? 2 : 1;
+          mama.src = `mama${frame}.png`;
+          isAnimating = false;
+        }, 250);
+      }
+
+      const distanceFromRight = window.innerWidth - pos - 200;
+      if (distanceFromRight <= 50) {
+        dialogue.style.opacity = 1;
+        hint.style.opacity = 1;
+        hint.style.left = (pos + 100) + 'px';
+      } else {
+        dialogue.style.opacity = 0;
+        hint.style.opacity = 0;
+      }
+    });
+
+    // Poirot találkozás kezelése
+    suspects.forEach(suspect => {
+      suspect.addEventListener('mouseenter', () => {
+        const rect = suspect.getBoundingClientRect();
+        nameDisplay.textContent = suspect.dataset.name;
+        nameDisplay.style.left = rect.left + rect.width / 2 + 'px';
+        nameDisplay.style.top = rect.top - 30 + 'px';
+        nameDisplay.style.opacity = 1;
+      });
+
+      suspect.addEventListener('mouseleave', () => {
+        nameDisplay.style.opacity = 0;
+      });
+
+      suspect.addEventListener('click', () => {
+        // Ha Poirot még nem jelent meg, ne lehessen kattintani senkire
+        if (!hasMetPoirot) return;
+
+        const name = suspect.dataset.name;
+        if (accuseCheckbox.checked) {
+          if (name === 'Bocimacska') {
+            displayDialogue(accuseDialogues.correct);
+            setTimeout(() => {
+              window.location.href = 'scene4.html'; // Átirányítás 4 másodperc múlva
+            }, 4000);
+          } else {
+            displayDialogue(accuseDialogues.incorrect);
+          }
+        } else {
+          displayDialogue(characterDialogues[name]);
+        }
+      });
+    });
+
+    // Poirot megjelenés után engedélyezés a gyanúsításra
+    function displayDialogue(text) {
+      characterDialogue.textContent = text;
+      characterDialogue.style.opacity = 1;
+      setTimeout(() => {
+        characterDialogue.style.opacity = 0;
+      }, 3000);
+    }
+
+    // Poirot megjelenése után engedélyezni a gyanúsítást
+    dialogue.addEventListener('transitionend', () => {
+      if (!hasMetPoirot && dialogue.style.opacity === '1') {
+        hasMetPoirot = true;
+      }
+    });
+
+    mama.style.left = '0px';
+
+    window.addEventListener('resize', () => {
+      pos = Math.min(pos, window.innerWidth - 100);
+      mama.style.left = pos + 'px';
+    });
+  </script>
+</body>
+</html>

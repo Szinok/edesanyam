@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scene 4</title>
+  <link rel="stylesheet" href="scene4.css" />
+</head>
+<body>
+  <div class="scene fade-in">
+    <img src="mama1.png" class="character" id="mama" />
+    <div class="dialogue" id="dialogue">A következő nyomokat találhatjuk...</div>
+    <div class="hint" id="hint">Tipp: figyeld a nyomokat!</div>
+  </div>
+
+  <script>
+    // Memória frissítése – több emlék engedélyezett
+    const memoryKey = 'memories';
+    const newMemory = 'Egy igazi nyomozó';
+
+    // Jelenlegi memória betöltése, ha van
+    let memories = JSON.parse(localStorage.getItem(memoryKey)) || [];
+
+    // Ha még nincs benne az új emlék, hozzáadjuk
+    if (!memories.includes(newMemory)) {
+        memories.push(newMemory);
+        localStorage.setItem(memoryKey, JSON.stringify(memories));
+    }
+    const mama = document.getElementById('mama');
+    const dialogue = document.getElementById('dialogue');
+    const hint = document.getElementById('hint');
+  
+    let pos = 0;
+    let frame = 1;
+    let isAnimating = false;
+    let isFacingRight = true;
+    const moveSpeed = 2;
+    let hasReachedRightEdge = false;
+  
+    document.addEventListener('keydown', (e) => {
+      let moved = false;
+  
+      if (e.key === 'd' || e.key === 'D') {
+        pos += moveSpeed;
+        moved = true;
+        if (!isFacingRight) {
+          isFacingRight = true;
+          mama.style.transform = 'scaleX(1)';
+        }
+      } else if (e.key === 'a' || e.key === 'A') {
+        pos -= moveSpeed;
+        moved = true;
+        if (isFacingRight) {
+          isFacingRight = false;
+          mama.style.transform = 'scaleX(-1)';
+        }
+      }
+  
+      pos = Math.max(0, Math.min(pos, window.innerWidth - 100));
+      mama.style.left = pos + 'px';
+  
+      if (moved && !isAnimating) {
+        isAnimating = true;
+        setTimeout(() => {
+          frame = frame === 1 ? 2 : 1;
+          mama.src = `mama${frame}.png`;
+          isAnimating = false;
+        }, 500); // lassú animáció
+      }
+  
+      // ✨ Törpmama szöveg, ha x = 705-805
+      if (pos >= 705 && pos <= 805) {
+        dialogue.innerText = 'Törpmama: Már... Csak... A... Fele....';
+        dialogue.style.opacity = 1;
+      } else {
+        if (dialogue.innerText === 'Törpmama: Már... Csak... A... Fele....') {
+          dialogue.style.opacity = 0;
+        }
+      }
+  
+      // ✨ Ha elérte a jobb szélhez közeli pontot
+      const distanceFromRight = window.innerWidth - pos - 200;
+      if (distanceFromRight <= 50 && !hasReachedRightEdge) {
+        hasReachedRightEdge = true;
+        setTimeout(() => {
+          window.location.href = 'scene5.html';
+        }, 1000); // 1 másodperces szünet, hogy érzékelhető legyen
+      }
+    });
+  
+    mama.style.left = '0px';
+  
+    window.addEventListener('resize', () => {
+      pos = Math.min(pos, window.innerWidth - 100);
+      mama.style.left = pos + 'px';
+    });
+  </script>
+  
+</body>
+</html>
